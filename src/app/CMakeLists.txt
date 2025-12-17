@@ -28,6 +28,13 @@ if (WIN32)
     set (MEDIAWRITER_SRCS ${MEDIAWRITER_SRCS} windrivemanager.cpp)
 endif()
 
+# Copy releases.json from project root to assets directory before building resources
+configure_file(
+    ${CMAKE_SOURCE_DIR}/releases.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/assets/releases.json
+    COPYONLY
+)
+
 qt6_add_resources(MEDIAWRITER_SRCS assets.qrc qml.qrc ${CMAKE_SOURCE_DIR}/src/translations/translations.qrc)
 
 if (WIN32)
