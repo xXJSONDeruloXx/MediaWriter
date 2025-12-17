@@ -11,7 +11,10 @@ for i in `ls mediawriter_*.po`; do
         LANGCODE=${LANGCODE/-/_}
     fi
     lrelease-qt6 $i -qm ../src/translations/$LANGCODE.qm
-    echo -e "\t\t<file>${LANGCODE}.qm</file>" >> ../src/translations/translations.qrc
+    # Only add to QRC if the file was actually created
+    if [ -f "../src/translations/$LANGCODE.qm" ]; then
+        echo -e "\t\t<file>${LANGCODE}.qm</file>" >> ../src/translations/translations.qrc
+    fi
 done
 echo -e '\t</qresource>\n</RCC>' >> ../src/translations/translations.qrc
 

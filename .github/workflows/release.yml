@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install liblzma-dev intltool itstool
+          sudo apt install liblzma-dev intltool itstool qt6-l10n-tools
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
