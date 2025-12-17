@@ -34,23 +34,13 @@ Page {
 
     QQC2.RadioButton {
         checked: true
-        text: qsTr("Official Editions")
+        text: qsTr("Desktop")
         onClicked: changeFilter(Units.Source.Product)
     }
 
     QQC2.RadioButton {
-        text: qsTr("Atomic Desktops")
-        onClicked: changeFilter(Units.Source.Emerging)
-    }
-
-    QQC2.RadioButton {
-        text: qsTr("Spins")
+        text: qsTr("Deck")
         onClicked: changeFilter(Units.Source.Spins)
-    }
-
-    QQC2.RadioButton {
-        text: qsTr("Labs")
-        onClicked: changeFilter(Units.Source.Labs)
     }
 
     QQC2.ComboBox {
