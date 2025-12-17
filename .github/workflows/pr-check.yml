@@ -85,17 +85,17 @@ jobs:
       - name: Bundle
         run: |
           set -eo pipefail
-          "$QT_ROOT_DIR"/bin/macdeployqt build/src/app/FedoraMediaWriter.app -qmldir=src/app/qml -executable=build/src/app/FedoraMediaWriter.app/Contents/MacOS/helper
+          "$QT_ROOT_DIR"/bin/macdeployqt build/src/app/BazziteMediaWriter.app -qmldir=src/app/qml -executable=build/src/app/BazziteMediaWriter.app/Contents/MacOS/helper
           # No idea why but macdeployqt deploys debug libs too, just remove them, maybe fix this sometimes
-          for i in `find build/src/app/FedoraMediaWriter.app/ -name '*.dSYM'`; do rm -fr "$i"; done
+          for i in `find build/src/app/BazziteMediaWriter.app/ -name '*.dSYM'`; do rm -fr "$i"; done
           cd build/src/app/
-          "$QT_ROOT_DIR"/bin/macdeployqt FedoraMediaWriter.app -dmg -always-overwrite
-          mv FedoraMediaWriter.dmg ../../../FedoraMediaWriter-macos${{ matrix.dmg_suffix }}.dmg
+          "$QT_ROOT_DIR"/bin/macdeployqt BazziteMediaWriter.app -dmg -always-overwrite
+          mv BazziteMediaWriter.dmg ../../../BazziteMediaWriter-macos${{ matrix.dmg_suffix }}.dmg
 
       - uses: actions/upload-artifact@v4
         with:
-          name: FedoraMediaWriter-macos${{ matrix.dmg_suffix }}.dmg
-          path: FedoraMediaWriter-macos${{ matrix.dmg_suffix }}.dmg
+          name: BazziteMediaWriter-macos${{ matrix.dmg_suffix }}.dmg
+          path: BazziteMediaWriter-macos${{ matrix.dmg_suffix }}.dmg
 
   Windows-MSVC:
     runs-on: windows-latest
