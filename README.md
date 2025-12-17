@@ -6,8 +6,6 @@ It is able to automatically download the required image for them and write them 
 
 This overwrites the drive's partition layout though so it also provides a way to restore a single-partition layout with a FAT32 partition.
 
-![Bazzite Media Writer running](/dist/screenshots/linux_main.png)
-
 ## Troubleshooting
 
 If you experience any problem with the application, like crashes or errors when writing to your drives, please open an issue here on Github.
@@ -54,15 +52,3 @@ To release a standalone package, use `macdeployqt`, supplied with your Qt instal
 #### Requirements
 
 * `xz-libs`
-
-## Translation
-
-If you want to help with translating Fedora Media Writer, please visit our [Weblate project page](https://translate.fedoraproject.org/projects/fedora-media-writer/mediawriter/).
-
-Information about the individual Fedora flavors is retrieved from the websites and translated as a separate project.
-
-## Other information
-
-For details about cryptography, see [CRYPTOGRAPHY.md](CRYPTOGRAPHY.md).
-
-Some brief privacy information (regarding User-Agent strings) is in [PRIVACY.md](PRIVACY.md).
