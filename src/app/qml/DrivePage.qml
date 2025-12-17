@@ -28,45 +28,6 @@ Page {
     
     layoutSpacing: units.gridUnit
     text: qsTr("Write Options")
-        
-    ColumnLayout {
-        id: versionCol
-        visible: selectedOption != Units.MainSelect.Write
-
-        Heading {
-            text: qsTr("Version")
-        }
-
-        QQC2.ComboBox {
-            id: versionCombo
-            Layout.fillWidth: true
-            model: releases.selected.versions
-            textRole: "name"
-            onCurrentIndexChanged: releases.selected.versionIndex = currentIndex
-            Component.onCompleted: {
-                if (releases.selected.version.status != Units.Status.FINAL && releases.selected.versions.length > 1) {
-                    currentIndex++
-                }
-            }
-        }
-    }
-
-    ColumnLayout {
-        id: architectureCol
-        visible: selectedOption != Units.MainSelect.Write
-
-        Heading {
-            text: qsTr("Hardware Architecture")
-        }
-
-        QQC2.ComboBox {
-            id: hwArchCombo
-            Layout.fillWidth: true
-            model: releases.selected.version.variants
-            textRole: "name"
-            onCurrentIndexChanged: releases.selected.version.variantIndex = currentIndex
-        }
-    }
 
     ColumnLayout {
         id: selectFileColumn
