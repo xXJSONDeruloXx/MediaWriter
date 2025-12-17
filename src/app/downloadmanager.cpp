@@ -46,7 +46,7 @@ QString DownloadManager::dir()
 
 QString DownloadManager::userAgent()
 {
-    QString ret = QString("FedoraMediaWriter/%1 (").arg(MEDIAWRITER_VERSION);
+    QString ret = QString("BazziteMediaWriter/%1 (").arg(MEDIAWRITER_VERSION);
     ret.append(QString("%1").arg(QSysInfo::prettyProductName().replace(QRegularExpression("[()]"), "")));
     ret.append(QString("; %1").arg(QSysInfo::buildAbi()));
     ret.append(QString("; %1").arg(QLocale(QLocale().language()).name()));
@@ -84,7 +84,14 @@ QString DownloadManager::downloadFile(DownloadReceiver *receiver, const QUrl &ur
     connect(m_current, &QObject::destroyed, [&]() {
         m_current = nullptr;
     });
-    fetchPageAsync(this, "https://mirrors.fedoraproject.org/mirrorlist?path=" + url.path());
+    
+    // Only fetch mirrors for Fedora URLs, skip for Bazzite and other non-Fedora downloads
+    if (url.host().contains("fedoraproject.org") || url.host().contains("fedorapeople.org")) {
+        fetchPageAsync(this, "https://mirrors.fedoraproject.org/mirrorlist?path=" + url.path());
+    } else {
+        // For non-Fedora URLs (like Bazzite), start download directly without mirror lookup
+        onStringDownloaded("");
+    }
 
     return bareFileName + ".part";
 }

@@ -49,25 +49,25 @@ jobs:
       - name: Bundle
         run: |
           set -eo pipefail
-          "$QT_ROOT_DIR"/bin/macdeployqt build/src/app/FedoraMediaWriter.app -qmldir=src/app/qml -executable=build/src/app/FedoraMediaWriter.app/Contents/MacOS/helper
+          "$QT_ROOT_DIR"/bin/macdeployqt build/src/app/BazziteMediaWriter.app -qmldir=src/app/qml -executable=build/src/app/BazziteMediaWriter.app/Contents/MacOS/helper
           # No idea why but macdeployqt deploys debug libs too, just remove them, maybe fix this sometimes
-          for i in `find build/src/app/FedoraMediaWriter.app/ -name '*.dSYM'`; do rm -fr "$i"; done
+          for i in `find build/src/app/BazziteMediaWriter.app/ -name '*.dSYM'`; do rm -fr "$i"; done
           cd build/src/app/
-          "$QT_ROOT_DIR"/bin/macdeployqt FedoraMediaWriter.app -dmg -always-overwrite
-          mv FedoraMediaWriter.dmg ../../../FedoraMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg
+          "$QT_ROOT_DIR"/bin/macdeployqt BazziteMediaWriter.app -dmg -always-overwrite
+          mv BazziteMediaWriter.dmg ../../../BazziteMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg
 
       - name: Upload artifact (for direct download from workflow)
         uses: actions/upload-artifact@v4
         with:
           # Use the dmg_arch_suffix for the artifact name
-          name: FedoraMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg
-          path: FedoraMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg
+          name: BazziteMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg
+          path: BazziteMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg
 
       - name: Upload to GitHub (release)
         run: |
           set -eo pipefail
           # Pass the full filename including the architecture suffix
-          bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="FedoraMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg"
+          bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="BazziteMediaWriter-macos${{ matrix.dmg_arch_suffix }}-${{ env.TAG_NAME }}.dmg"
 
   Windows-MSVC:
     runs-on: windows-latest
@@ -175,15 +175,15 @@ jobs:
           echo "LICENSE.LGPL-2.txt" >> build/app/release/uninstall.log
 
           "/c/Program Files (x86)/NSIS/makensis.exe" -DCERTPATH="" -DCERTPASS="" dist/win/mediawriter_native.tmp.nsi
-          mv dist/win/FMW-setup.exe ./"FedoraMediaWriter-win64-${{ env.TAG_NAME }}.exe"
+          mv dist/win/FMW-setup.exe ./"BazziteMediaWriter-win64-${{ env.TAG_NAME }}.exe"
 
       - name: Upload to GitHub (release)
         run: |
-          bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="FedoraMediaWriter-win64-${{ env.TAG_NAME }}.exe"
+          bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="BazziteMediaWriter-win64-${{ env.TAG_NAME }}.exe"
 
       - name: Publish to WinGet
         uses: vedantmgoyal9/winget-releaser@main
         with:
-          identifier: Fedora.FedoraMediaWriter
+          identifier: Bazzite.BazziteMediaWriter
           version: ${{ env.TAG_NAME }}
           token: ${{ secrets.WINGET_TOKEN }}
