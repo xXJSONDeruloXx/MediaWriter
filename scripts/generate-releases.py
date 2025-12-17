@@ -211,6 +211,26 @@ def generate_iso_metadata(base_url: str, iso_files: List[str], version: str = "4
     return metadata
 
 
+def transform_subvariants(metadata: List[Dict]) -> List[Dict]:
+    """
+    Transform subvariants to make them unique for non-Desktop variants.
+    Desktop (variant="Bazzite") keeps original subvariants (KDE, GNOME, etc.)
+    Others get device prefix (Deck_KDE, Ally_GNOME, etc.)
+    """
+    for entry in metadata:
+        variant = entry.get('variant', '')
+        subvariant = entry.get('subvariant', '')
+        
+        # Only modify non-desktop variants
+        if variant != 'Bazzite':
+            # Create unique subvariant by combining variant and subvariant
+            # e.g., "Bazzite_Deck" + "KDE" = "Deck_KDE"
+            device_type = variant.replace('Bazzite_', '')
+            entry['subvariant'] = f"{device_type}_{subvariant}"
+    
+    return metadata
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate ISO metadata JSON for Bazzite downloads"
@@ -240,6 +260,11 @@ def main():
         action='store_true',
         help="Pretty-print JSON output"
     )
+    parser.add_argument(
+        '--write-both',
+        action='store_true',
+        help="Write to both root releases.json and src/app/data/assets/releases.json"
+    )
     
     args = parser.parse_args()
     
@@ -260,11 +285,24 @@ def main():
     # Generate metadata
     metadata = generate_iso_metadata(args.base_url, iso_files, args.version)
     
+    # Transform subvariants for proper categorization
+    metadata = transform_subvariants(metadata)
+    
     # Output JSON
     json_kwargs = {'indent': 2} if args.pretty else {}
     json_output = json.dumps(metadata, **json_kwargs)
     
-    if args.output:
+    if args.write_both:
+        # Write to root directory (for raw content URL)
+        root_path = Path(__file__).parent.parent / 'releases.json'
+        root_path.write_text(json_output)
+        print(f"Metadata written to {root_path}", file=sys.stderr)
+        
+        # Write to assets directory (for building)
+        assets_path = Path(__file__).parent.parent / 'src' / 'app' / 'data' / 'assets' / 'releases.json'
+        assets_path.write_text(json_output)
+        print(f"Metadata written to {assets_path}", file=sys.stderr)
+    elif args.output:
         args.output.write_text(json_output)
         print(f"Metadata written to {args.output}", file=sys.stderr)
     else:
