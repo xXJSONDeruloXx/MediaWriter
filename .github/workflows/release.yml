@@ -8,6 +8,78 @@ env:
     QT_VERSION: '6.9.3'
 
 jobs:
+  Linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set env (TAG_NAME)
+        run: echo "TAG_NAME=$(bash ./dist/get-tag-name.sh)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install liblzma-dev
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{env.QT_VERSION}}
+          cache: true
+          cache-key-prefix: ${{ github.job }}-qt
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          make -j$(nproc)
+
+      - name: Create AppDir
+        run: |
+          cd build
+          make DESTDIR=AppDir install
+          # Create a tarball of the binaries
+          cd AppDir
+          tar -czf ../../BazziteMediaWriter-linux-x86_64-${{ env.TAG_NAME }}.tar.gz usr/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BazziteMediaWriter-linux-x86_64-${{ env.TAG_NAME }}.tar.gz
+          path: BazziteMediaWriter-linux-x86_64-${{ env.TAG_NAME }}.tar.gz
+
+      - name: Upload to GitHub (release)
+        run: |
+          bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="BazziteMediaWriter-linux-x86_64-${{ env.TAG_NAME }}.tar.gz"
+
+  Flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.8
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set env (TAG_NAME)
+        run: echo "TAG_NAME=$(bash ./dist/get-tag-name.sh)" >> $GITHUB_ENV
+
+      - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: "BazziteMediaWriter-${{ env.TAG_NAME }}.flatpak"
+          manifest-path: "dist/flatpak/org.fedoraproject.MediaWriter.json"
+          cache-key: flatpak-builder-${{ github.sha }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BazziteMediaWriter-${{ env.TAG_NAME }}.flatpak
+          path: BazziteMediaWriter-${{ env.TAG_NAME }}.flatpak
+
+      - name: Upload to GitHub (release)
+        run: |
+          bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="BazziteMediaWriter-${{ env.TAG_NAME }}.flatpak"
+
   macOS:
     strategy:
       matrix:
