@@ -46,7 +46,7 @@
     <qresource prefix="/">
         <file alias="metadata.json">data/assets/metadata.json</file>
         <file alias="releases.json">data/assets/releases.json</file>
-        <file alias="downloadPageImage">data/assets/8-download.svg</file>
-        <file alias="mainPageImage">data/assets/1-source.svg</file>
+        <file alias="downloadPageImage">data/assets/Bazzite_Color.svg</file>
+        <file alias="mainPageImage">data/assets/Bazzite_Color_Long.svg</file>
     </qresource>
 </RCC>
