@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install liblzma-dev
+          sudo apt install liblzma-dev intltool itstool
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -27,6 +27,11 @@ jobs:
           version: ${{env.QT_VERSION}}
           cache: true
           cache-key-prefix: ${{ github.job }}-qt
+
+      - name: Generate translations and desktop file
+        run: |
+          cd po
+          bash build-translations.sh
 
       - name: Build
         run: |
@@ -67,7 +72,7 @@ jobs:
       - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: "BazziteMediaWriter-${{ env.TAG_NAME }}.flatpak"
-          manifest-path: "dist/flatpak/org.fedoraproject.MediaWriter.json"
+          manifest-path: "dist/flatpak/org.bazzite.MediaWriter.json"
           cache-key: flatpak-builder-${{ github.sha }}
 
       - name: Upload artifact
