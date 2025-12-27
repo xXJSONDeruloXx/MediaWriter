@@ -69,6 +69,11 @@ jobs:
       - name: Set env (TAG_NAME)
         run: echo "TAG_NAME=$(bash ./dist/get-tag-name.sh)" >> $GITHUB_ENV
 
+      - name: Generate translations and desktop file
+        run: |
+          cd po
+          bash build-translations.sh
+
       - name: Update Flatpak manifest to use local source
         run: |
           cat > dist/flatpak/org.bazzite.MediaWriter.json << 'EOF'
