@@ -3,6 +3,7 @@ name: release
 on:
   release:
     types: [ created ]
+  workflow_dispatch:
 
 env:
     QT_VERSION: '6.9.3'
