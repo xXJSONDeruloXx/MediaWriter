@@ -69,6 +69,10 @@ jobs:
       - name: Set env (TAG_NAME)
         run: echo "TAG_NAME=$(bash ./dist/get-tag-name.sh)" >> $GITHUB_ENV
 
+      - name: Update Flatpak manifest with release commit
+        run: |
+          sed -i 's/"branch": "main"/"commit": "${{ github.sha }}"/' dist/flatpak/org.bazzite.MediaWriter.json
+
       - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: "BazziteMediaWriter-${{ env.TAG_NAME }}.flatpak"
