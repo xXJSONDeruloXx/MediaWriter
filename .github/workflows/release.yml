@@ -69,9 +69,44 @@ jobs:
       - name: Set env (TAG_NAME)
         run: echo "TAG_NAME=$(bash ./dist/get-tag-name.sh)" >> $GITHUB_ENV
 
-      - name: Update Flatpak manifest with release commit
+      - name: Update Flatpak manifest to use local source
         run: |
-          sed -i 's/"branch": "main"/"commit": "${{ github.sha }}"/' dist/flatpak/org.bazzite.MediaWriter.json
+          cat > dist/flatpak/org.bazzite.MediaWriter.json << 'EOF'
+          {
+              "id": "org.bazzite.MediaWriter",
+              "runtime": "org.kde.Platform",
+              "runtime-version": "6.8",
+              "sdk": "org.kde.Sdk",
+              "command": "mediawriter",
+              "finish-args": [
+                  "--device=all",
+                  "--filesystem=host",
+                  "--socket=fallback-x11",
+                  "--socket=wayland",
+                  "--share=network",
+                  "--share=ipc",
+                  "--system-talk-name=org.freedesktop.UDisks2",
+                  "--talk-name=org.freedesktop.Notifications"
+              ],
+              "cleanup": [
+                  "/include",
+                  "/lib/cmake",
+                  "/lib/pkgconfig"
+              ],
+              "modules": [
+                  {
+                      "name": "MediaWriter",
+                      "buildsystem": "cmake-ninja",
+                      "sources": [
+                          {
+                              "type": "dir",
+                              "path": "../.."
+                          }
+                      ]
+                  }
+              ]
+          }
+          EOF
 
       - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
         with:
@@ -262,9 +297,9 @@ jobs:
         run: |
           bash dist/upload-to-github.sh github_api_token=${{ secrets.GITHUB_TOKEN }} tag="${{ env.TAG_NAME }}" filename="BazziteMediaWriter-win64-${{ env.TAG_NAME }}.exe"
 
-      - name: Publish to WinGet
-        uses: vedantmgoyal9/winget-releaser@main
-        with:
-          identifier: Bazzite.BazziteMediaWriter
-          version: ${{ env.TAG_NAME }}
-          token: ${{ secrets.WINGET_TOKEN }}
+      # - name: Publish to WinGet
+      #   uses: vedantmgoyal9/winget-releaser@main
+      #   with:
+      #     identifier: Bazzite.BazziteMediaWriter
+      #     version: ${{ env.TAG_NAME }}
+      #     token: ${{ secrets.WINGET_TOKEN }}
