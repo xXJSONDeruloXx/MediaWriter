@@ -37,6 +37,20 @@ configure_file(
 
 qt6_add_resources(MEDIAWRITER_SRCS assets.qrc qml.qrc ${CMAKE_SOURCE_DIR}/src/translations/translations.qrc)
 
+# Prepare desktop and metainfo files for installation on Linux
+if (UNIX AND NOT APPLE)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/data/org.bazzite.MediaWriter.desktop.in
+        ${CMAKE_CURRENT_BINARY_DIR}/org.bazzite.MediaWriter.desktop
+        COPYONLY
+    )
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/data/org.bazzite.MediaWriter.metainfo.xml.in
+        ${CMAKE_CURRENT_BINARY_DIR}/org.bazzite.MediaWriter.metainfo.xml
+        COPYONLY
+    )
+endif()
+
 if (WIN32)
     qt6_add_resources(MEDIAWRITER_SRCS windowsicon.qrc)
 endif()
@@ -111,6 +125,10 @@ install(TARGETS mediawriter
 
 if (UNIX AND NOT APPLE)
     install(DIRECTORY data/icons/hicolor/ DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/icons/hicolor)
-    install(FILES data/org.bazzite.MediaWriter.desktop DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/applications)
-    install(FILES data/org.bazzite.MediaWriter.metainfo.xml DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/metainfo)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/org.bazzite.MediaWriter.desktop
+        DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/applications)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/org.bazzite.MediaWriter.metainfo.xml
+        DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/metainfo)
 endif()
