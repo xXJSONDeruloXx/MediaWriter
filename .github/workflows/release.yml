@@ -98,8 +98,13 @@ jobs:
                   {
                       "name": "MediaWriter",
                       "buildsystem": "cmake-ninja",
+                      "config-opts": [
+                          "-DCMAKE_BUILD_TYPE=Release"
+                      ],
                       "build-commands": [
-                          "cd po && bash build-translations.sh"
+                          "cd po && bash build-translations.sh",
+                          "ninja -C /run/build/MediaWriter",
+                          "ninja -C /run/build/MediaWriter install"
                       ],
                       "sources": [
                           {
